@@ -19,3 +19,15 @@ wordImportance["coding"] = 35
 print(wordImportance["Swift"])      // -> 20
 print(wordImportance["chinchilla"]) // -> 10
 ```
+
+We can iterate over all the non-default (key, value) pairs in our `Sparse` as well.
+```swift
+for (key, value) in wordImportance {
+  print(key) // -> Swift -> coding
+}
+```
+
+We can also reset to default the values in a `Sparse`.
+```swift
+wordImportance.resetValueForKey("Swift")
+```
