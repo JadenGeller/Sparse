@@ -1,0 +1,29 @@
+client:
+  name: swift-build
+
+tools: {}
+
+targets:
+  "": [<Sparse>]
+  Sparse: [<Sparse>]
+
+commands:
+  <Sparse-swiftc>:
+    tool: swift-compiler
+    executable: "/Library/Developer/Toolchains/swift-2.2-SNAPSHOT-2015-12-22-a.xctoolchain/usr/bin/swiftc"
+    inputs: ["/Users/jadengeller/Documents/Packages/Sparse/Sources/Sparse.swift","/Users/jadengeller/Documents/Packages/Sparse/Sources/SparseSlice.swift"]
+    outputs: ["<Sparse-swiftc>","/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.swiftmodule","/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.o/Sources/Sparse.swift.o","/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.o/Sources/SparseSlice.swift.o"]
+    module-name: "Sparse"
+    module-output-path: "/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.swiftmodule"
+    is-library: true
+    sources: ["/Users/jadengeller/Documents/Packages/Sparse/Sources/Sparse.swift","/Users/jadengeller/Documents/Packages/Sparse/Sources/SparseSlice.swift"]
+    objects: ["/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.o/Sources/Sparse.swift.o","/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.o/Sources/SparseSlice.swift.o"]
+    import-paths: ["/Users/jadengeller/Documents/Packages/Sparse/.build/debug"]
+    temps-path: "/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.o/Sparse"
+    other-args: ["-j8","-Onone","-g","-target","x86_64-apple-macosx10.10","-enable-testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk","-I","/usr/local/include"]
+  <Sparse>:
+    tool: shell
+    inputs: ["<Sparse-swiftc>","/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.o/Sources/Sparse.swift.o","/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.o/Sources/SparseSlice.swift.o"]
+    outputs: ["<Sparse>","/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.a"]
+    args: ["/bin/sh","-c","rm -f '/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.a'; ar cr '/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.a' '/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.o/Sources/Sparse.swift.o' '/Users/jadengeller/Documents/Packages/Sparse/.build/debug/Sparse.o/Sources/SparseSlice.swift.o'"]
+    description: "Linking Library:  .build/debug/Sparse.a"
