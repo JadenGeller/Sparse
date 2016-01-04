@@ -1,6 +1,0 @@
-version: "Apple Swift version 2.2-dev (LLVM 3ebdbb2c7e, Clang f66c5bb67b, Swift 17fe37d715)"
-options: "55915bb7d4a7dcb478cd85253530fad7"
-build_time: [504692591, 955521000]
-inputs:
-  "/Users/jadengeller/Documents/Packages/Sparse/Sources/Sparse.swift": !dirty [504691232, 0]
-  "/Users/jadengeller/Documents/Packages/Sparse/Sources/SparseSlice.swift": [504692528, 0]
