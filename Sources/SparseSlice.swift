@@ -39,15 +39,15 @@ extension SparseSlice: CollectionType {
 }
 
 extension Sparse where Key: HashableForwardIndexType {
-    func get(range: Range<Key>) -> SparseSlice<Key, Value> {
+    func slice(range: Range<Key>) -> SparseSlice<Key, Value> {
         return SparseSlice(backing: self, range: range)
     }
     
-    mutating func set(slice: SparseSlice<Key, Value>) {
-        slice.indices.forEach { key in self[key] = slice[key] }
+    mutating func update(range: Range<Key>, withSlice slice: SparseSlice<Key, Value>) {
+        zip(range, slice).forEach { (key, value) in self[key] = value }
     }
 
-// WHY DOESN'T THIS FAIL TO COMPILE?!?!?! *CRASH*
+//    WHY DOES THIS FAIL TO COMPILE?!?!?! *CRASH*
 //    public subscript(range: Range<Key>) -> SparseSlice<Key, Value> {
 //        get {
 //            return SparseSlice(backing: self, range: range)

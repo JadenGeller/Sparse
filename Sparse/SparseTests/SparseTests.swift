@@ -58,11 +58,11 @@ class SparseTests: XCTestCase {
     
     func testSlice() {
         var sparse = Sparse([1 : 58, 2 : 63, 6 : 29]) { key in key * key }
-        XCTAssertEqual([0, 58, 63, 9], Array(sparse.get(0...3)))
-        var slice = sparse.get(0...3)
+        XCTAssertEqual([0, 58, 63, 9], Array(sparse.slice(0...3)))
+        var slice = sparse.slice(0...3)
         slice[0] = 5
         slice[1] = 6
-        sparse.set(slice)
-        XCTAssertEqual([5, 6, 63, 9], Array(sparse.get(0...3)))
+        sparse.update(0...3, withSlice: slice)
+        XCTAssertEqual([5, 6, 63, 9], Array(sparse.slice(0...3)))
     }
 }
