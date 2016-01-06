@@ -40,3 +40,4 @@ for (i, x) in array.enumerate() {
   print("Memory at location \(i) equals \(x)")
 }
 ```
+Unlike `Sparse`, whose `SequenceType` conformance provides no order guarentees, `SparseSlice` can order the keys so it will iterate over them in the order you'd expect.
