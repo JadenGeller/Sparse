@@ -31,3 +31,12 @@ We can also reset to default the values in a `Sparse`.
 ```swift
 wordImportance.resetValueForKey("Swift")
 ```
+
+Though `Sparse` has dictionary-like semantics, it exposes a type `SparseSlice` with array-like semantics. Perhaps you're using a `Sparse` to represent an infinite tape of memory.
+```swift
+let tape = Sparse<Int, Int>(defaultValue: 0)
+let array = tape.slice(0..<Int.max)
+for (i, x) in array.enumerate() {
+  print("Memory at location \(i) equals \(x)")
+}
+```
