@@ -32,7 +32,7 @@ We can also reset to default the values in a `Sparse`.
 wordImportance.resetValueForKey("Swift")
 ```
 
-## SparseSlice
+### SparseSlice
 
 Though `Sparse` has dictionary-like semantics, it exposes a type `SparseSlice` with array-like semantics. Perhaps you're using a `Sparse` to represent an infinite tape of memory.
 ```swift
@@ -44,7 +44,7 @@ for (i, x) in array.enumerate() {
 ```
 Unlike `Sparse`, whose `SequenceType` conformance provides no order guarentees, `SparseSlice` can order the keys so it will iterate over them in the order you'd expect.
 
-## Non-Equatable `Value` Types
+### Non-Equatable `Value` Types
 
 Though `Sparse` is most eaily used with `Equatable` values, it can also be used with non-equatable values as well. When a value is not `Equatable`, you must initialize the `Sparse` with a lambda `isDefaultValueForKey` of type `Value -> Bool` that will determine whether a given value is the default.
 
