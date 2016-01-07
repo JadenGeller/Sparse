@@ -38,7 +38,7 @@ extension SparseSlice: CollectionType {
     }
 }
 
-extension Sparse where Key: HashableForwardIndexType {
+extension Sparse where Key: HashableForwardIndexType, Value: Equatable {
     func slice(range: Range<Key>) -> SparseSlice<Key, Value> {
         return SparseSlice(backing: self, range: range)
     }

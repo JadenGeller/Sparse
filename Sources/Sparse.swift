@@ -6,17 +6,38 @@
 //  Copyright © 2015 Jaden Geller. All rights reserved.
 //
 
-public struct Sparse<Key: Hashable, Value: Equatable>: CollectionType {
-    private let defaultValueForKey: Key -> Value
-    private var backing: [Key : Value] = [:]
+public struct Sparse<Key: Hashable, Value>: CollectionType {
+    private let defaultValueForKey: Key -> EquatableValue<Value>
+    internal var backing: [Key : Value] = [:]
     
+    public init(defaultValueForKey: Key -> EquatableValue<Value>) {
+        self.defaultValueForKey = defaultValueForKey
+    }
+}
+
+extension Sparse {
+    public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, defaultValueForKey: Key -> EquatableValue<Value>) {
+        self.init(defaultValueForKey: defaultValueForKey)
+        sequence.forEach { (key, value) in self.backing[key] = value }
+    }
+    
+    public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, defaultValue: EquatableValue<Value>) {
+        self.init(sequence, defaultValueForKey: { _ in defaultValue })
+    }
+    
+    public init(defaultValue: EquatableValue<Value>) {
+        self.init(defaultValueForKey: { _ in defaultValue })
+    }
+}
+
+extension Sparse where Value: Equatable {
     public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, defaultValueForKey: Key -> Value) {
         self.init(defaultValueForKey: defaultValueForKey)
         sequence.forEach { (key, value) in self.backing[key] = value }
     }
     
     public init(defaultValueForKey: Key -> Value) {
-        self.defaultValueForKey = defaultValueForKey
+        self.init(defaultValueForKey: { EquatableValue(defaultValueForKey($0)) })
     }
     
     public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, defaultValue: Value) {
@@ -26,13 +47,15 @@ public struct Sparse<Key: Hashable, Value: Equatable>: CollectionType {
     public init(defaultValue: Value) {
         self.init(defaultValueForKey: { _ in defaultValue })
     }
-    
+}
+
+extension Sparse {
     public subscript(key: Key) -> Value {
         get {
-            return backing[key] ?? defaultValueForKey(key)
+            return backing[key] ?? defaultValueForKey(key).value
         }
         set {
-            let isDefault = newValue == defaultValueForKey(key)
+            let isDefault = defaultValueForKey(key).isValue(newValue)
             backing[key] = isDefault ? nil : newValue
         }
     }

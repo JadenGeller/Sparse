@@ -65,4 +65,12 @@ class SparseTests: XCTestCase {
         sparse.update(0...3, withSlice: slice)
         XCTAssertEqual([5, 6, 63, 9], Array(sparse.slice(0...3)))
     }
+    
+    func testNotEquatable() {
+        struct Opaque {}
+        var sparse = Sparse<Int, Opaque?>(defaultValue: .None)
+        sparse[0] = Opaque()
+        sparse[0] = nil
+        XCTAssertTrue(sparse.backing.count == 0)
+    }
 }
