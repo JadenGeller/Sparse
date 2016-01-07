@@ -68,7 +68,12 @@ class SparseTests: XCTestCase {
     
     func testNotEquatable() {
         struct Opaque {}
-        var sparse = Sparse<Int, Opaque?>(defaultValue: .None)
+        var sparse = Sparse<Int, Opaque?>(defaultValue: nil, isDefaultValue: { value in
+            switch value {
+            case nil: return true
+            default:  return false
+            }
+        })
         sparse[0] = Opaque()
         sparse[0] = nil
         XCTAssertTrue(sparse.backing.count == 0)

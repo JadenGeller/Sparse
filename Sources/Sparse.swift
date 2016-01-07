@@ -7,41 +7,27 @@
 //
 
 public struct Sparse<Key: Hashable, Value>: CollectionType {
-    private let defaultValueForKey: Key -> EquatableValue<Value>
+    public typealias ValueChecker = Value -> Bool
+    
+    private let defaultValueForKey: Key -> Value
+    private let isDefaultValueForKey: Key -> ValueChecker
     internal var backing: [Key : Value] = [:]
     
-    public init(defaultValueForKey: Key -> EquatableValue<Value>) {
+    public init(defaultValueForKey: Key -> Value, isDefaultValueForKey: Key -> ValueChecker) {
         self.defaultValueForKey = defaultValueForKey
+        self.isDefaultValueForKey = isDefaultValueForKey
+    }
+    
+    public init(defaultValue: Value, isDefaultValue: ValueChecker) {
+        self.init(defaultValueForKey: { _ in defaultValue }, isDefaultValueForKey: { _ in isDefaultValue })
     }
 }
 
-extension Sparse {
-    public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, defaultValueForKey: Key -> EquatableValue<Value>) {
-        self.init(defaultValueForKey: defaultValueForKey)
-        sequence.forEach { (key, value) in self.backing[key] = value }
-    }
-    
-    public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, defaultValue: EquatableValue<Value>) {
-        self.init(sequence, defaultValueForKey: { _ in defaultValue })
-    }
-    
-    public init(defaultValue: EquatableValue<Value>) {
-        self.init(defaultValueForKey: { _ in defaultValue })
-    }
-}
+// MARK: Equatable Initializers
 
 extension Sparse where Value: Equatable {
-    public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, defaultValueForKey: Key -> Value) {
-        self.init(defaultValueForKey: defaultValueForKey)
-        sequence.forEach { (key, value) in self.backing[key] = value }
-    }
-    
     public init(defaultValueForKey: Key -> Value) {
-        self.init(defaultValueForKey: { EquatableValue(defaultValueForKey($0)) })
-    }
-    
-    public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, defaultValue: Value) {
-        self.init(sequence, defaultValueForKey: { _ in defaultValue })
+        self.init(defaultValueForKey: defaultValueForKey, isDefaultValueForKey: { key in { value in defaultValueForKey(key) == value } })
     }
     
     public init(defaultValue: Value) {
@@ -49,13 +35,81 @@ extension Sparse where Value: Equatable {
     }
 }
 
+// MARK: Memory-Inefficient Initializers 
+
+extension Sparse {
+    /// Since there's no way to check when a value has been set back to the default, default values will
+    /// be stored in memory unless removed with `resetValueAtIndex`.
+    public init(memoryInefficientDefultValueForKey defaultValueForKey: Key -> Value) {
+        self.init(defaultValueForKey: defaultValueForKey, isDefaultValueForKey: { _ in { _ in false } })
+    }
+    
+    /// Since there's no way to check when a value has been set back to the default, default values will
+    /// be stored in memory unless removed with `resetValueAtIndex`.
+    public init(memoryInefficientDefultValue defaultValue: Value) {
+        self.init(memoryInefficientDefultValueForKey: { _ in defaultValue })
+    }
+}
+
+// MARK: Sequence Initializers
+
+extension Sparse {
+    mutating private func _addElementsFromSequence<S: SequenceType where S.Generator.Element == (Key, Value)>(sequence: S) {
+        sequence.forEach { (key, value) in self.backing[key] = value }
+    }
+    
+    public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, defaultValueForKey: Key -> Value, isDefaultValueForKey: Key -> ValueChecker) {
+        self.init(defaultValueForKey: defaultValueForKey, isDefaultValueForKey: isDefaultValueForKey)
+        _addElementsFromSequence(sequence)
+    }
+    
+    public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, defaultValue: Value, isDefaultValue: ValueChecker) {
+        self.init(defaultValue: defaultValue, isDefaultValue: isDefaultValue)
+        _addElementsFromSequence(sequence)
+    }
+}
+
+// MARK: Equatable Sequence Initializers
+
+extension Sparse where Value: Equatable {
+    public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, defaultValueForKey: Key -> Value) {
+        self.init(defaultValueForKey: defaultValueForKey)
+        _addElementsFromSequence(sequence)
+    }
+    
+    public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, defaultValue: Value) {
+        self.init(defaultValue: defaultValue)
+        _addElementsFromSequence(sequence)
+    }
+}
+
+// MARK: Memory-Inefficient Sequence Initializers
+
+extension Sparse {
+    /// Since there's no way to check when a value has been set back to the default, default values will
+    /// be stored in memory unless removed with `resetValueAtIndex`.
+    public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, memoryInefficientDefultValueForKey defaultValueForKey: Key -> Value) {
+        self.init(memoryInefficientDefultValueForKey: defaultValueForKey)
+        _addElementsFromSequence(sequence)
+    }
+    
+    /// Since there's no way to check when a value has been set back to the default, default values will
+    /// be stored in memory unless removed with `resetValueAtIndex`.
+    public init<S: SequenceType where S.Generator.Element == (Key, Value)>(_ sequence: S, memoryInefficientDefultValue defaultValue: Value) {
+        self.init(memoryInefficientDefultValue: defaultValue)
+        _addElementsFromSequence(sequence)
+    }
+}
+
+// MARK: Implementation
+
 extension Sparse {
     public subscript(key: Key) -> Value {
         get {
-            return backing[key] ?? defaultValueForKey(key).value
+            return backing[key] ?? defaultValueForKey(key)
         }
         set {
-            let isDefault = defaultValueForKey(key).isValue(newValue)
+            let isDefault = isDefaultValueForKey(key)(newValue)
             backing[key] = isDefault ? nil : newValue
         }
     }

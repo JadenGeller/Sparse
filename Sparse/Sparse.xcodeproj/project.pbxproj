@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4D2902EC1C3DF11D00C01D68 /* EquatableValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D2902EB1C3DF11D00C01D68 /* EquatableValue.swift */; };
 		4D4443DE1C327A5D00D84F27 /* SparseSlice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D4443DD1C327A5D00D84F27 /* SparseSlice.swift */; };
 		4D6F6B531C3264DF00634E22 /* Sparse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D6F6B481C3264DF00634E22 /* Sparse.framework */; };
 		4D6F6B581C3264DF00634E22 /* SparseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6F6B571C3264DF00634E22 /* SparseTests.swift */; };
@@ -25,7 +24,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		4D2902EB1C3DF11D00C01D68 /* EquatableValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EquatableValue.swift; path = ../../Sources/EquatableValue.swift; sourceTree = "<group>"; };
 		4D4443DD1C327A5D00D84F27 /* SparseSlice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SparseSlice.swift; path = ../../Sources/SparseSlice.swift; sourceTree = "<group>"; };
 		4D6F6B481C3264DF00634E22 /* Sparse.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Sparse.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4D6F6B4D1C3264DF00634E22 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -78,7 +76,6 @@
 				4D6F6B4D1C3264DF00634E22 /* Info.plist */,
 				4D6F6B621C3264F200634E22 /* Sparse.swift */,
 				4D4443DD1C327A5D00D84F27 /* SparseSlice.swift */,
-				4D2902EB1C3DF11D00C01D68 /* EquatableValue.swift */,
 			);
 			path = Sparse;
 			sourceTree = "<group>";
@@ -199,7 +196,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4D2902EC1C3DF11D00C01D68 /* EquatableValue.swift in Sources */,
 				4D6F6B631C3264F200634E22 /* Sparse.swift in Sources */,
 				4D4443DE1C327A5D00D84F27 /* SparseSlice.swift in Sources */,
 			);
