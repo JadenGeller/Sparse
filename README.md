@@ -48,7 +48,7 @@ Unlike `Sparse`, whose `SequenceType` conformance provides no order guarentees, 
 
 Though `Sparse` is most eaily used with `Equatable` values, it can also be used with non-equatable values as well. When a value is not `Equatable`, you must initialize the `Sparse` with a lambda `isDefaultValueForKey` of type `Value -> Bool` that will determine whether a given value is the default.
 
-This is particularly useful for types that are equatable for only certain values, and thus cannot conform to `Equatable`. For example, `Optional<Any -> Any>` cannot be made equatable since `Any -> Any` is not equatable, but it is trivial to see that `Optional<Any -> Any>.None == Optional<Any -> Any>.None` since this doesn't involve function comparisons. Thus, if the default value is `nil`, you can implement `isDefaultValueForKey` to make this non-equatable type work well with `Sparse`.
+This is particularly useful for types that are equatable for only certain values, and thus cannot conform to `Equatable`. For example, `Optional<Any -> Any>` cannot be made equatable since `Any -> Any` is not equatable, but obviously two `nil` values can be determined equal without involving function comparisons. Thus, if the default value is `nil`, you can implement `isDefaultValue` or `isDefaultValueForKey` to make this non-equatable type work well with `Sparse`.
 ```swift
 var efficientSparse = Sparse<Int, Optional<Any -> Any>>(defaultValue: nil, isDefaultValue: { value in
     switch value {
