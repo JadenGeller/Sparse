@@ -42,24 +42,22 @@ for (i, x) in array.enumerate() {
 ```
 Unlike `Sparse`, whose `SequenceType` conformance provides no order guarentees, `SparseSlice` can order the keys so it will iterate over them in the order you'd expect.
 
-Though `Sparse` is most eaily used with `Equatable` values, it can also be used with non-equatable values as well. As an optimization, `Sparse` removes a value from storage when it is set to the default. If you'd like to use a sparse with a value that absolutely cannot be equatable, initialize `Sparse` with a "neverEquatable" `EquatableValue`.
+Though `Sparse` is most eaily used with `Equatable` values, it can also be used with non-equatable values as well. When a value is not `Equatable`, you must initialize the `Sparse` with a lambda `isDefaultValueForKey` of type `Value -> Bool` that will determine whether a given value is the default.
+
+This is particularly useful for types that are equatable for only certain values, and thus cannot conform to `Equatable`. For example, `Optional<Any -> Any>` cannot be made equatable since `Any -> Any` is not equatable, but it is trivial to see that `Optional<Any -> Any>.None == Optional<Any -> Any>.None` since this doesn't involve function comparisons. Thus, if the default value is `nil`, you can implement `isDefaultValueForKey` to make this non-equatable type work well with `Sparse`.
 ```swift
-typealias Function = Any -> Any
-let identity: Function = { x in x }
-var inefficientSparse = Sparse<Int, Function>(defaultValue: EquatableValue(neverEquatable: identity))
-```
-This sparse can be used completely normally, but it will continue to grow in size as more and more keys are set to the default value.
-```swift
-for i in 0...10000 { inefficientSparse[i] = identity }       // memory-intensive for a "neverEquatable" value!!
-for i in 0...10000 { inefficientSparse.resetValueForKey(i) } // this operation actually releases the memory as expected
-```
-If you're working with a type that cannot be made *fully* equatable, but it is always possible to check if a given value is the default or not, you *can* take advantage of this optimization! `EquatableValue` provides an initializer takes a closure that, given a value, determines if it is the default value. So even if you're working with `Optional<Blah>` for non-optional type `Blah`, if you're default value is `nil` you can use the optimization.
-```swift
-var efficientSparse = Sparse<Int, Function>(defaultValue: EquatableValue(value: nil, isValue: { value in
-  switch value {
-  case nil: return true
-  defualt:  return false
-  }
+var efficientSparse = Sparse<Int, Optional<Any -> Any>>(defaultValue: nil, isDefaultValue: { value in
+    switch value {
+    case nil: return true
+    default:  return false
+    }
 })
 ```
-Since this is a common pattern, you can actually use `EquatableValue.None` for a `nil` or a `[]` default value.
+
+You might be wondering what the point of the `Equatable` confromance is anyhow. Well, whenever you set a key to the default value, the value is removed instead of stored as a memory optimization. You can choose to construct a Sparse without this optimization, but you will experience memory utilization more similiar to a non-sparse array when you set keys back to the default value. Note that, if you use the `resetValueForKey` function, it will *actually* remove the value and you'll get good memory utilization.
+```swift
+let identity: Any -> Any = { x in x }
+let inefficientSparse = Sparse<Int, Any -> Any>(memoryInefficientDefultValue: identity)
+for i in 0...10000 { inefficientSparse[i] = identity }       // BAD!  (stores 10,000 copies of default entry)
+for i in 0...10000 { inefficientSparse.resetValueForKey(i) } // GOOD! (actually removes entries)
+```
